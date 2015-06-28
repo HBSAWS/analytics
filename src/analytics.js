@@ -5,7 +5,7 @@
 //
  
 (function(){
-
+  
 if (window.analytics) return;
 
 var Analytics = {

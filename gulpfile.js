@@ -2,6 +2,7 @@ var gulp = require('gulp'),
     pkg = require('./package.json'),
     header = require('gulp-header'),
     dateFormat = require('dateformat'),
+    uglify = require('gulp-uglify'),
     runSequence = require('run-sequence');
 
 var opts = {
@@ -12,12 +13,13 @@ var opts = {
         dist: './dist',
         destDev: ( process.platform === 'darwin' ) ? 
             '/Volumes/__nas-dev_dev_webfarm/htdocs/wwwhbs/shared' : 
-            '\\\\nas-dev\\stage_webfarm\\htdocs\\securelib\\static\\libs\\splib\\1.0'
+            '\\\\nas-dev\\stage_webfarm\\htdocs\\securelib\\static\\libs\\analytics\\1.0'
     }
 
 
 gulp.task('build', function() {
-   return gulp.src(['src/splib.js'])
+   return gulp.src(['src/*.js'])
+   .pipe(uglify({preserveComments: 'some'}))
    .pipe(header(opts.banner, { pkg: opts.pkg, date: opts.dt, user: opts.username } ))
    .pipe(gulp.dest(opts.dist));
 })
@@ -31,7 +33,7 @@ gulp.task('default',['build']);
 
 gulp.task('watch', function() {
 
-    gulp.watch(['splib.js'],function(){
+    gulp.watch(['src/*.js'],function(){
         runSequence('build','copy:dev');
     })
    
