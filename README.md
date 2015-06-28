@@ -5,7 +5,6 @@
 HTTP script reference
 
 ```html
-<script src="http://www.hbs.edu/js/analytics.js"></script>
 <script src="https://secure.hbs.edu/static/js/analytics.js"></script>
 ```
 
