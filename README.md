@@ -1,8 +1,6 @@
-# analytics
+# HBS Web Analytics Wrapper
 
-HBS Web Analytics Wrapper
-
-## INSTALL
+## Install
 
 HTTP script reference
 
@@ -11,7 +9,7 @@ HTTP script reference
 <script src="https://secure.hbs.edu/static/js/analytics.js"></script>
 ```
 
-## ASYNC LOADING
+## Async Loading
 
 ```html
 <script type="text/javascript">
@@ -31,7 +29,7 @@ HTTP script reference
 </script>
 ```
 
-## SETTINGS
+## Settings
 
 Options to control the configuration of the analytics
 
@@ -42,7 +40,7 @@ Must be run before page load
 analytics.settings({profile:"profilecode"})
 ```
 
-## LINK MARKUP
+## Link Markup
 
 ```html
 <!-- forces link to track as an offsite link -->
@@ -64,14 +62,14 @@ analytics.settings({profile:"profilecode"})
 <a href="page.html" rel="search-result">Link</a>
 ```
 
-## VIEW
+## View
 
 Simple link tracking. This automatically detects if the URL is a file or external link. Does not count as a page view.
 
 ```javascript
 analytics.view("http://www.google.com");
 ```
-## PAGE VIEW
+## Page View
 
 Full pageload tracking. Sets the channel and page name variables. Best used for modals or ajax page loads.
 
@@ -79,7 +77,7 @@ Full pageload tracking. Sets the channel and page name variables. Best used for 
 analytics.pageView("/page.html");
 ```
 
-## EVENT
+## Event
 
 Simple event tracking. Allows you to count the number of user interactions on a page. Does not count as a success metric.
 
@@ -87,7 +85,7 @@ Simple event tracking. Allows you to count the number of user interactions on a 
 analytics.event("next-page");
 ```
 
-## SEARCH
+## Search
 
 Track Search Metrics
 
@@ -101,7 +99,7 @@ Must be run before page load
 analytics.search("Query Term",100,["Topics : Finance","Geo : Asia"]);
 ```
 
-## MEDIA
+## Media
 
 Track Media Metrics
 
@@ -122,7 +120,7 @@ analytics.mediaMilestone("mba-video-2010",75);
 analytics.mediaMilestone("mba-video-2010",100);
 ```
 
-## ERROR
+## Error
 
 ServerSide Error Analytics
 
@@ -135,7 +133,7 @@ analytics.error("timeout","directory-search: Results returned in more than 9 sec
 analytics.error("server error","directory-search: q=query2&q2=query2");
 ```
 
-## JAVASCRIPT ERROR TRACKING
+## Javascript Error Tracking
 
 Record JavaScript errors on the page
 
@@ -145,7 +143,7 @@ Must be run before page load
 window.onerror = analytics.onerror
 ```
 
-## USER ERROR
+## User Error
 
 User Interaction Error Analytics
 
@@ -153,7 +151,7 @@ User Interaction Error Analytics
 analytics.userError("Zip Code Cannot Be Blank");
 ```
 
-## ENGAGEMENT
+## Engagement
 
 Increase User Engagement Count
 
@@ -163,7 +161,7 @@ Must be run before page load
 analytics.addEngagement(2);
 ```
 
-## CAMPAIGNS
+## Campiagns
 
 Adds a user to a campaign
 
@@ -173,7 +171,7 @@ Must be run before page load
 analytics.campaignStart("mp-banner-102-ee-amp","Email");
 ```
 
-## CONVERSION
+## Conversion
 
 Must be run before page load
 
@@ -181,7 +179,7 @@ Must be run before page load
 analytics.conversion("apply-amp");
 ```
 
-## FEATURES
+## Features
 
 In-page analytics tracking of features.
 
