@@ -1,0 +1,31 @@
+test staff is not admin
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript">
+
+setCookie("HBSCOOKIE","jgriffith@bschool.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls");
+window.setTimeout(function(){
+   assertTrue("Is admin?",!analytics.user.isAdmin());
+   assertNumUnicaTags(1);
+   assertUnicaTag("Pagetag sent ok?",1,
+                  {lc:document.location.href,
+                   un:"jgriffith@bschool.hbs.edu",
+                   pvtype:"default",
+                   role:"Staff"
+   })
+   ok();
+},1000);
+
+</script>
+
+
+<script type="text/javascript" src="../analytics.js"></script>
+<script type="text/javascript">
+analytics.settings(
+       {profile:'test'
+        }
+);
+
+assertTrue("Is admin?",!analytics.user.isAdmin());
+</script>
+
+

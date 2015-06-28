@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<base href="http://www.library.hbs.edu" />
+</head>
+<body>
+<script type="text/javascript" src="http://webdev.hbs.edu/js/analytics/jquery-1.2.3.min.js"></script>
+<script type="text/javascript" src="http://webdev.hbs.edu/js/analytics.js"></script>
+
+
+<script>
+jQuery(document).ready(function($) {
+   $("a.offsite").click(function() {
+     var a = this;
+     if ($(a).hasClass('new_window')) {
+         analytics.view(a.href);
+         window.open(a.href,'_blank','height=100,width=100');
+     } else {
+         analytics.view(a.href,function() {
+           document.location = a.href;
+         })
+     }
+     return false;
+   })
+})
+
+
+function playvideo() {
+    analytics.event("play")
+    analytics.view("http://stream.hbs.edu/video.flv")
+    return false;
+}
+function playaudio() {
+    analytics.view("#tab2")
+    return false;
+}
+</script>
+
+
+
+<a href="test.html" onclick="return analytics.click(this)" >test</a>
+<br>
+<a href="#t" class="offsite">Offsite Link Anchor</a>
+<br>
+<a href="1.html" class="offsite">Offsite Link</a>
+<br>
+<a href="1.html" class="offsite new_window">Offsite Link New Window</a>
+
+<!--
+analytics = {
+   site: "testsite",
+   app: "classcards",
+   title: document.title,
+   topics: ['abc','def'],
+   error: 404,
+}
+
+<a href="test.pdf">this is a link</a>
+<a href="test.doc">this is a link</a>
+<a href="test.xls">this is a link</a>
+<a href="test.ppt">this is a link</a>
+
+analytics.campaignStart("abc")
+analytics.campaignEnd("abc")
+
+$("#button").click(function() {
+    analytics.event("button","clicked");
+});
+
+$("#pause").click(function() {
+    analytics.event("video2","paused");
+});
+
+$("#pause").click(function() {
+    analytics.event("document","scrolled");
+});
+
+$("#faq-2").click(function() {
+    analytics.event("faq-2","opened");
+});
+
+$("#button").click(function() {
+    analytics.page("/doc/thing.pdf");
+});
+
+$("#form").submit(function() {
+    analytics.user.setEmail("jgriffith@hbs.edu")
+    analytics.user.setName("Jeff Griffith")
+    analytics.user.setCountry("Germany")
+});
+
+
+Analytics.Campaign.start("abc1");
+Analytics.Campaign.complete("abc1");
+
+Analytics._reset()
+Analytics._init()
+
+<script type="text/javascript" src="http://www.hbs.edu/js/analytics.js"></script>
+-->

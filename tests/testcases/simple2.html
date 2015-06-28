@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>PAGETITLE</title>
+</head>
+<body style="margin:0;padding:0;overflow:hidden">
+
+<script type="text/javascript" src="../analytics.js"></script>
+<style>
+
+</style>
+<script>
+analytics.settings({profile:'test'});
+analytics.settings({personID:123});
+analytics.settings({eventID:'event123'});
+</script>
+
+
+<script>
+var testSegment = analytics.startTestSegment({'header-no-nav':2,'header-dropdown-all':1,'header-dropdown-academic':1})
+document.write('<div class="'+testSegment+'">') // start test segment
+</script>
+<a href="http://www.google.com">Google</a>
+<script>
+document.write('</div>') // end test segment
+</script>
+</body>
+</html>

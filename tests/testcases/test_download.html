@@ -1,0 +1,20 @@
+test download
+
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript" src="../analytics2.js"></script>
+<script type="text/javascript">
+analytics.settings({profile:'test'});
+
+window.setTimeout(function(){
+  analytics.view("/file.pdf");
+  assertEquals("Download Event Var",analytics.adobe._pairs['eVar5'],'http://webdev.hbs.edu/file.pdf');
+  assertEquals("Download Event",analytics.adobe._pairs['events'],'event5');
+  assertEquals("Download Event URL",analytics.adobe._pairs['pageURL'],'http://webdev.hbs.edu/file.pdf');
+  ok();
+},100)
+
+</script>
+
+
+
+

@@ -1,0 +1,71 @@
+<html>
+<head>
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript" src="testrunner/jquery-1.2.3.min.js"></script>
+<script type="text/javascript">
+
+window.setTimeout(function(){
+   assertNumUnicaTags(4);
+   assertUnicaTag("Default pagetag sent ok?",1,
+                  {lc:document.location.href,
+                   profile:"test",
+                   site:"webdev.hbs.edu"
+   })
+   assertUnicaTag("offsite link class pagetag sent ok?",2,
+                  {lc:"http://webdev.hbs.edu/test.html",
+                   profile:"test",
+                   site:"webdev.hbs.edu"
+   })
+   assertUnicaTag("offsite link pagetag sent ok?",3,
+                  {lc:"http://www.amazon.com",
+                   profile:"test",
+                   site:"webdev.hbs.edu"
+   })
+   assertUnicaTag("pdf link pagetag sent ok?",4,
+                  {lc:"http://webdev.hbs.edu/test.pdf",
+                   profile:"test",
+                   site:"webdev.hbs.edu"
+   })
+
+
+   ok();
+},4000);
+
+jQuery(window).load(function(){
+   window.setTimeout(function(){
+   jQuery("#links a").each(function(){
+       //analytics._linkClick(this);
+       $(this).bind('linkclick',analytics._linkClick);
+       $(this).trigger('linkclick');
+   })
+   },1000);
+
+})
+
+</script>
+
+
+<script type="text/javascript" src="../analytics.js"></script>
+<script type="text/javascript">
+analytics.settings(
+       {profile:'test'
+       }
+);
+
+</script>
+</head>
+<body>
+<ul id="links">
+<li><a href="/test.html" class="offsite">test offsite class</a></li>
+<li><a href="http://www.amazon.com">test offsite link</a></li>
+<li><a href="/test.pdf">test pdf link</a></li>
+<li><a href="#">test anchor</a></li>
+<li><a href="javascript:void()">test void</a></li>
+<li><a href="mailto:jgriffith@hbs.edu">test mailto</a></li>
+<li><a href="/mba/">test normal link</a></li>
+</ul>
+</body>
+</html>
+
+
+

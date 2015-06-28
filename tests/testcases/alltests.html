@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>analytics.js Unit Test</title>
+<style type="text/css">
+iframe {width:100%;height:50px;}
+iframe.large { height: 400px;}
+</style>
+
+<script type="text/javascript" src="testrunner/jquery-1.2.3.min.js"></script>
+
+<script type="text/javascript">
+
+if(!("console" in window) || !("firebug" in console)) {
+   var names = ["log", "debug", "info", "warn", "error", "assert","dir", "dirxml", "group"
+                , "groupEnd", "time", "timeEnd", "count", "trace","profile", "profileEnd"];
+   window.console = {};
+   for (var i = 0; i <names.length; ++i) window.console[names[i]] = function() {};
+}
+
+
+
+jQuery(function($){
+
+var currtest = 0;
+var tests;
+function onload(data){
+   tests = new Array();
+   $(data).find("a").each(function(i,x){
+     console.info(x);
+     if(/\/(test_[a-z-_]+\.html)$/.test(x.href)) {
+        tests.push(RegExp.$1);
+     }
+   });
+   console.info(tests);
+
+   nexttest();
+}
+
+var num = 0;
+function nexttest() {
+   testcase = tests[currtest];
+   klass = "";
+   if (!testcase) {
+     testcase = "testsuite.html";
+     klass="large";
+   } else {
+     testcase = "testcases/"+testcase
+   }
+   $("body").append('<iframe id=\"if'+num+'\" class="'+klass+'"></iframe>');
+   $("#if"+num).attr("src",testcase);
+   num++;
+   currtest++;
+}
+
+window.nexttest = nexttest;
+$.get("/js/analytics/testcases/",{},onload,'html');
+
+});
+
+
+
+</script>
+</head>
+<body>
+
+<div id="testcases"></div>
+
+
+</body>

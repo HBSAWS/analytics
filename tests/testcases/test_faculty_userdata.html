@@ -1,0 +1,29 @@
+<html>
+<head></head>
+<body>
+test faculty userdata
+
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript">
+
+setCookie("HBSCOOKIE","rabrami@bschool.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls");
+setCookie("UnicaData","");
+
+window.setTimeout(function(){
+   assertEquals("Is Faculty",analytics.user.role,"Faculty");
+   assertEquals("Is Faculty",analytics.user.roleDetail,"Faculty");
+   console.info(analytics.user);
+   ok();
+},2500);
+
+</script>
+
+
+<script type="text/javascript" src="../analytics.js"></script>
+<script type="text/javascript">
+analytics.settings({profile:'test'});
+
+</script>
+
+
+</body>

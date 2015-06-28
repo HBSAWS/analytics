@@ -1,0 +1,18 @@
+test baseurl
+
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript" src="../analytics2.js"></script>
+<script type="text/javascript">
+analytics.settings({profile:'test',baseUrl:'/analytics2/'});
+
+window.setTimeout(function(){
+  // first click gets one event
+  assertEquals("BaseURL Event",analytics.adobe._pairs['channel'],'js');
+  ok();
+},100)
+
+</script>
+
+
+
+

@@ -1,0 +1,20 @@
+test sharethis
+
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript" src="../analytics2.js"></script>
+<script type="text/javascript">
+analytics.settings({profile:'test'});
+
+window.setTimeout(function(){
+  analytics.share("Facebook","http://www.facebook.com/alongurl");
+  assertEquals("Has Facebook Share",analytics.adobe._pairs['eVar8'],'Facebook');
+  assertEquals("Has Facebook Share Event",analytics.adobe._pairs['events'],'event6');
+  assertEquals("Has Facebook Share Event URL",analytics.adobe._pairs['pageURL'],'http://www.facebook.com/alongurl');
+  ok();
+},100)
+
+</script>
+
+
+
+

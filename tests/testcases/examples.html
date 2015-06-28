@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>PAGETITLE</title>
+</head>
+<body>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="../analytics2.js"></script>
+
+<!--
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript" src="xga_formatted.js"></script>
+
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-4401474-2");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+-->
+
+<script>
+
+$(function() {
+  $("a.new_window").click(function(){
+     window.open(this.href);
+     return false;
+  })
+});
+
+
+analytics.settings(
+       {profile:'test',
+        //url:"http://webdev.hbs.edu/js/analytics/override.html",
+        //lastprofile: true,
+        siteAdmins:{'role':['Staff','Faculty'] },
+        title:"PageTitleOverride"
+        //,gaTrackers:[pageTracker]
+        }
+);
+
+analytics.conversion("sampleconversion");
+
+</script>
+
+
+<ul>
+<li><a href="http://webstage.library.hbs.edu/about_us/">about us</a>
+<li><a href="1.html" class="offsite">Offsite Link</a>
+<li><a href="https://email.hbs.edu" rel="offsite">Offsite HTTPS Link</a>
+<li><a href="1.html" class="offsite new_window">Offsite Link New Window</a>
+<li><a href="1.pdf">PDF File</a>
+
+</ul>
+

@@ -1,0 +1,48 @@
+test offsite
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript">
+
+setCookie("HBSCOOKIE","jgriffith@bschool.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls");
+
+window.setTimeout(function(){
+   analytics.view(document.getElementById("testlink").href);
+},1000);
+
+window.setTimeout(function(){
+   assertNumUnicaTags(2);
+
+
+   assertUnicaTag("Pagetag sent ok?",1,
+                  {lc:document.location.href,
+                   un:"jgriffith@bschool.hbs.edu",
+                   profile:"test",
+                   site:"webdev.hbs.edu",
+                   pvtype:"admin",
+                   role:"Staff",
+                   roleb:"Staff"
+   })
+
+   assertUnicaTag("Pagetag sent ok?",2,
+                  {rf:document.location.href,
+                   lc:document.getElementById("testlink").href,
+                   un:"jgriffith@bschool.hbs.edu",
+                   role:"Staff"
+   })
+   ok();
+},1500);
+</script>
+
+
+<script type="text/javascript" src="../analytics.js"></script>
+<script type="text/javascript">
+analytics.settings(
+       {profile:'test',
+        siteAdmins:{'role':['Staff','Faculty'] }
+        }
+);
+
+assertTrue("Is admin?",analytics.user.isAdmin());
+</script>
+
+<a href="test.pdf" id="testlink">test link</a>
+

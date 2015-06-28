@@ -1,0 +1,28 @@
+<html>
+<head></head>
+<body>
+test staff userdata
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript">
+
+setCookie("HBSCOOKIE","jgriffith@bschool.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls");
+setCookie("UnicaData","");
+
+window.setTimeout(function(){
+   assertEquals("Is Staff",analytics.user.role,"Staff");
+   assertEquals("Is Staff",analytics.user.roleDetail,"Staff");
+   console.info(analytics.user);
+   ok();
+},2000);
+
+</script>
+
+
+<script type="text/javascript" src="../analytics.js"></script>
+<script type="text/javascript">
+analytics.settings({profile:'test'});
+
+</script>
+
+
+</body>

@@ -1,0 +1,14 @@
+test lastprofile p1
+<script type="text/javascript">
+
+window.setTimeout(function(){
+   document.location.href = document.location.href.replace("_p1.html","_p2.html");
+},1500);
+</script>
+
+
+<script type="text/javascript" src="../analytics.js"></script>
+<script type="text/javascript">
+analytics.settings({profile:'testinglastprofile'});
+</script>
+

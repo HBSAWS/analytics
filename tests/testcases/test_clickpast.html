@@ -1,0 +1,26 @@
+test clickpast
+
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript" src="../analytics2.js"></script>
+<script type="text/javascript">
+analytics.util.delCookie('s_sess');
+analytics.util.delCookie('s_pers');
+analytics.settings({profile:'test'});
+
+window.setTimeout(function(){
+
+  // I can't figure out how to test this
+
+  // first click gets one event
+  analytics.reset();
+  analytics._init();
+  // next click gets the 2nd event
+  //assertEquals("Clickthrough Event",analytics.adobe.s.events,'event4');
+  ok();
+},100)
+
+</script>
+
+
+
+

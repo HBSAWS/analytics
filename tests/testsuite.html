@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>analytics.js Unit Test</title>
+
+<script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+<link rel="stylesheet" media="screen" href="http://code.jquery.com/qunit/qunit-1.12.0.css" />
+
+<!-- load analytics.js (this is what we're testing) -->
+<script type="text/javascript" src="analytics.js"></script>
+
+<script type="text/javascript">
+var eq = strictEqual;
+
+analytics.user.clearCampaign();
+
+test("analytics",function(){
+   analytics.reset();
+   analytics.settings({baseUrl:"/"});
+   analytics.settings({personID:'1'});
+   analytics.settings({profile:"foo"});
+
+
+   var path = "; domain=.hbs.edu; path=/";
+   document.cookie = "HBSCOOKIE=jgriffith@bschool.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls"+path;
+   document.cookie = "AnalyticsData="+path;
+   document.cookie = "AnalyticsForceRole="+path;
+   analytics.user.init();
+   analytics.save();
+
+   ok(analytics.adobe._pairs['prop9'] == 'staff : staff',"adobe role var is staff : staff - "+analytics.adobe._pairs['prop9']);
+   eq(analytics.adobe._pairs['eVar11'],'D=c9',"adobe role var is the dynamic variable");
+   ok(analytics.adobe._pairs['eVar12'],'D=c11',"adobe roledetail var is the dynamic variable");
+
+   eq(analytics.adobe._pairs['campaign'],undefined,"adobe campaign var");
+
+   eq(analytics.adobe._pairs['prop8'],'1',"adobe un var is 1");
+   eq(analytics.adobe._pairs['eVar10'],'D=c8',"adobe un var is jgriffith");
+   eq(analytics.adobe._pairs['eVar9'],'logged in');
+
+   eq(analytics.adobe._tagsent, 1, 'one adobe tag sent');
+
+   ok(analytics.adobe._pairs['pageURL'].indexOf('testsuite.html') > -1 , "adobe page url");
+   eq(analytics.adobe._pairs['pageName'],analytics.util.getPageName(document.location.href), "adobe page name");
+   ok(analytics.adobe._pairs['eVar1'] == 'D=pageName', "adobe page name");
+   eq(analytics.adobe._pairs['channel'],'shared', "adobe channel");
+   eq(analytics.adobe._pairs['prop1'],'foo', "adobe page type");
+   eq(analytics.adobe._pairs['prop2'],'shared : js', "adobe section");
+   eq(analytics.adobe._pairs['prop3'],'shared : js : analytics', "adobe section");
+   ok(analytics.adobe._pairs['eVar6'].length > 0,"timeparting");
+
+   analytics.reset();
+
+   analytics.view("http://webdev.hbs.edu/sample.pdf");
+   ok(analytics.adobe._pairs['pageURL'] == "http://webdev.hbs.edu/sample.pdf" , "adobe sample.pdf");
+   ok(analytics.adobe._pairs['referrer'].indexOf('testsuite.html') > -1, "adobe sample.pdf referrer");
+
+})
+
+// test User
+test("analytics.user", function() {
+
+
+    var origcookie = analytics.util.getCookie("HBSCOOKIE");
+
+    var path = "; domain=.hbs.edu; path=/";
+
+    document.cookie = "AnalyticsData="+path;
+    document.cookie = "AnalyticsData=; expires=Thursday, 01-Jan-1970 01:00 GMT"+path;
+    document.cookie = "HBSCOOKIE=jgriffith@bschool.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls"+path;
+    document.cookie = "AnalyticsForceRole="+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'Staff',"user has staff role")
+    ok(analytics.user.roleDetail == 'Staff',"user has staff detailed role")
+    ok(analytics.user.id == 'jgriffith@bschool.hbs.edu',"user id is 'jgriffith@hbs.edu'")
+
+    analytics.settings({siteAdmins:{'role':'Staff'}})
+    ok(analytics.user.isAdmin());
+    analytics.settings({siteAdmins:{'role':['Staff']}})
+    ok(analytics.user.isAdmin());
+
+    analytics.settings({siteAdmins:{'role':'Faculty'}})
+    ok(!analytics.user.isAdmin());
+    analytics.settings({siteAdmins:{'role':['Faculty']}})
+    ok(!analytics.user.isAdmin());
+
+    console.info(analytics.user);
+
+    analytics.reset();
+    analytics.settings({profile:'library',site:'webdev.library.hbs.edu'})
+    analytics.user.init()
+    analytics.save();
+    ok(analytics.user.lastprofile == 'library',"users last profile is library")
+    ok(analytics.user.lastsite == 'webdev.library.hbs.edu',"users last site is library")
+    analytics.reset();
+
+    analytics.settings({profile:'www',site:'webdev.hbs.edu',lastprofile:true})
+    analytics.save();
+    ok(analytics.user.lastprofile == 'library',"users last profile is still library");
+    ok(analytics.user.lastsite == 'webdev.library.hbs.edu',"users last site is still library");
+    analytics.reset();
+
+    analytics.save();
+    analytics.reset();
+
+
+    document.cookie = "HBSCOOKIE=sectiona@mba2008.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'MBA',"user has mba role")
+    ok(analytics.user.roleDetail == 'MBA 2008',"user has MBA 2008 detailed role")
+    ok(analytics.user.id == 'sectiona@mba2008.hbs.edu',"user id is 'sectiona@mba2008.hbs.edu'")
+    console.info(analytics.user);
+
+    document.cookie = "HBSCOOKIE=sectionz@mba2008.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls"+path;
+    document.cookie = "AnalyticsForceRole=Doctoral"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'Doctoral',"user has doctoral role")
+    ok(analytics.user.roleDetail == 'Doctoral',"user has no detailed role" + analytics.user.roleDetail)
+    ok(analytics.user.id == 'sectionz@mba2008.hbs.edu',"user id is 'sectionz@mba2008.hbs.edu'")
+    console.info(analytics.user);
+    document.cookie = "AnalyticsForceRole="+path;
+
+    document.cookie = "HBSCOOKIE=sectionb@mba2008.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls"+path;
+    document.cookie = "AnalyticsForceRole=BADDoctoral"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'MBA',"user has mba role " + analytics.user.role)
+    ok(analytics.user.roleDetail == 'MBA 2008',"user has MBA 2008 detailed role" + analytics.user.roleDetail)
+    ok(analytics.user.id == 'sectionb@mba2008.hbs.edu',"user id is 'sectiona@mba2008.hbs.edu'")
+    console.info(analytics.user);
+    document.cookie = "AnalyticsForceRole="+path;
+
+
+    document.cookie = "HBSCOOKIE=sectiona@mba1944.alumni.hbs.edu:1204988042:mvBckFlx8Gck6pGK7xTT19ABp2ztjgiKkD9xxiUx"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'Alumni',"user has alumni role")
+    ok(analytics.user.roleDetail == 'MBA 1940s',"user has MBA 1940s detailed role")
+    ok(analytics.user.id == 'sectiona@mba1944.alumni.hbs.edu',"user id is 'sectiona@mba1944.alumni.hbs.edu'")
+    console.info(analytics.user);
+
+    document.cookie = "HBSCOOKIE=bmacdonald@amp155.alumni.hbs.edu:1204988042:mvBckFlx8Gck6pGK7xTT19ABp2ztjgiKkD9xxiUx"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'Alumni',"user has alumni role")
+    ok(analytics.user.roleDetail == 'Exed Alum',"user has Exed Alum detailed role")
+    ok(analytics.user.id == 'bmacdonald@amp155.alumni.hbs.edu',"user id is 'bmacdonald@amp155.alumni.hbs.edu'")
+    console.info(analytics.user);
+
+    document.cookie = "HBSCOOKIE=libraryguest@guest.hbs.edu:1204988042:mvBckFlx8Gck6pGK7xTT19ABp2ztjgiKkD9xxiUx"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'External',"user has alumni role")
+    ok(analytics.user.roleDetail == 'Guest',"user has Guest detailed role")
+    ok(analytics.user.id == 'libraryguest@guest.hbs.edu',"user id is 'libraryguest@guest.hbs.edu'")
+    console.info(analytics.user);
+
+
+    document.cookie = "HBSCOOKIE=x"+path;
+    document.cookie = "HBSCOOKIE=xx; expires=Thursday, 01-Jan-1970 01:00 GMT"+path;
+    document.cookie = "AnalyticsData=x"+path;
+    document.cookie = "AnalyticsData=x; expires=Thursday, 01-Jan-1970 01:00 GMT"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'External',"user has external role")
+    eq(analytics.user.roleDetail,'Non HBS',"user has non hbs detailed role")
+    ok(analytics.user.id == null,"user id is null")
+    analytics._init();
+    eq(analytics.adobe._pairs['eVar9'],'anonymous');
+    console.info("HERE",analytics.user,document.cookie);
+
+    document.cookie = "HBSCOOKIE=129880@public.hbs.edu:1204989000:IprOEs83e/PGMhvLxjp2gVLjs6qShldYDkPoitc"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'External',"user has External role")
+    ok(analytics.user.roleDetail == 'Public',"user has Public Detailed role")
+    ok(analytics.user.id == '129880@public.hbs.edu',"user id is '129880@public.hbs.edu'")
+    console.info(analytics.user);
+
+    document.cookie = "HBSCOOKIE=blicht@exed.hbs.edu:1204989000:IprOEs83e/PGMhvLxjp2gVLjs6qShldYDkPoitc"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'Exed',"user has exed role")
+    ok(analytics.user.roleDetail == 'Exed',"user has exed detailed role")
+    ok(analytics.user.id == 'blicht@exed.hbs.edu',"user id is 'blicht@exed.hbs.edu'")
+    console.info(analytics.user);
+
+    document.cookie = "HBSCOOKIE=blicht%40crossreg.hbs.edu:1204989000:IprOEs83e/PGMhvLxjp2gVLjs6qShldYDkPoitc"+path;
+    analytics.user.init()
+    ok(analytics.user.role == 'External',"user has External role")
+    ok(analytics.user.roleDetail == 'Crossreg',"user has crossreg role")
+    ok(analytics.user.id == 'blicht@crossreg.hbs.edu',"user id is 'blicht@crossreg.hbs.edu'")
+    console.info(analytics.user);
+
+    analytics.user.role = "External";
+    analytics.user.roleDetail = "Crossreg";
+    analytics.user.id = 'blicht@crossreg.hbs.edu';
+    analytics.user.store();
+    analytics.user.role = "";
+    analytics.user.roleDetail = "";
+    analytics.user.id = 'blicht@crossreg.hbs.edu';
+    analytics.user.load();
+    ok(analytics.user.role == 'External',"user has External role")
+    ok(analytics.user.roleDetail == 'Crossreg',"user has crossreg role")
+    ok(analytics.user.id == 'blicht@crossreg.hbs.edu',"user id is 'crossreg@crossreg.hbs.edu'")
+
+    analytics.user.role = "";
+    analytics.user.roleDetail = "";
+    analytics.user.id = 'xxx@crossreg.hbs.edu';
+    analytics.user.load();
+    ok(analytics.user.role == '',"user has unknown role")
+    ok(analytics.user.roleDetail == '',"user unknown detailed role")
+
+    analytics.campaignStart('testcampaign');
+    ok(analytics.user.campaign == 'testcampaign',"User belongs to testcampaign");
+
+    analytics.campaignEnd();
+    ok(analytics.user.campaign == 'None',"User has no campaign");
+
+    analytics.campaignStart('testcampaign');
+    analytics.conversion('form-submit');
+    analytics.save();
+    ok(analytics.user.campaign == 'testcampaign',"User has testcampaign campaign after form submit");
+    console.info(analytics.user);
+
+    document.cookie = "AnalyticsData="+path;
+    document.cookie = "AnalyticsForceRole="+path;
+    document.cookie = "HBSCOOKIE="+origcookie+path;
+})
+
+test("analytics.util",function() {
+
+    var protocol = document.location.protocol;
+    var host = document.location.host;
+    var util = analytics.util;
+    ok(util.absPath("http://www.hbs.edu/") == "http://www.hbs.edu/", "host abs path");
+    ok(util.absPath("/") == protocol+'//'+host+'/', "abs path");
+
+    ok(util.arrayEqual(["a string"],["a string"]));
+    ok(!util.arrayEqual("a string",["a string"]));
+    ok(!util.arrayEqual(["a string"],["a string","2"]));
+
+    ok(util.arrayEqual(util.toArray("a string"),["a string"]));
+    ok(util.arrayEqual(util.toArray(["a string"]),["a string"]));
+
+    ok(util.urlnormalize("http://www.hbs.edu/index.html") == "http://www.hbs.edu/");
+    ok(util.urlnormalize("http://www.hbs.edu/test.pdf") == "http://www.hbs.edu/test.pdf");
+    ok(util.urlnormalize("http://www.hbs.edu/index.html") == "http://www.hbs.edu/", "index.html");
+    ok(util.urlnormalize("http://www.hbs.edu/") == "http://www.hbs.edu/", "index.html");
+    ok(util.urlnormalize("http://www.hbs.edu/index.jsp?p=v") == "http://www.hbs.edu/?p=v", "index.html");
+    ok(util.urlnormalize("http://www.hbs.edu/apply.pdf") == "http://www.hbs.edu/apply.pdf", "index.html");
+
+    ok(util.gaPath("/abc/","z") == "/abc/","relative URL");
+    ok(util.gaPath("http://abc/","z") == "/z/http://abc/","absolute URL");
+    ok(util.gaPath("http://"+document.location.host+"/test.html","z") == "/test.html","absolute on this domain");
+    ok(util.gaPath("http://"+document.location.host+":8080/test.html","z") == "/test.html","absolute on this domain");
+
+    var a = document.createElement('a');
+    a.href = "http://www.hbs.edu/test.pdf";
+    ok(util.isDownload(a) == true,"pdf link");
+    a.href = "http://www.hbs.edu/test.docx";
+    ok(util.isDownload(a) == true,"doc link");
+    a.href = "http://www.hbs.edu/test.doc";
+    ok(util.isDownload(a) == true,"doc link");
+    a.href = "http://www.hbs.edu/test.m4v";
+    ok(util.isDownload(a) == true,"doc m4v");
+    a.href = "http://www.hbs.edu/test.html";
+    ok(util.isDownload(a) == false,"html link");
+    a.href = "http://www.hbs.edu/test.pdf?somthing=1";
+    ok(util.isDownload(a) == true,"pdf with parameters link");
+    a.href = "http://www.google.com";
+    ok(util.isOffsite(a) == true,"offsite link");
+    a.href = "https://email.hbs.edu";
+    ok(util.isOffsite(a) == true,"offsite https link");
+    a.href = "http://"+document.location.host+"/test.html";
+    ok(util.isOffsite(a) == false,"onsite link");
+
+    a.href = "http://www.hbs.edu/test.html";
+    ok(util.isLink(a) == true,"link");
+    a.href = "https://email.hbs.edu/";
+    ok(util.isLink(a) == true,"https link");
+    a.href = "mailto:test@hbs.edu";
+    ok(util.isLink(a) == false,"link");
+
+})
+
+test("analytics.search",function(){
+    analytics.reset();
+    analytics.search("searchterm",10);
+    eq(analytics.adobe._pairs["prop4"],"searchterm");
+    eq(analytics.adobe._pairs["eVar3"],10);
+    eq(analytics.adobe._pairs["eVar2"],"D=c4");
+    analytics.search("searchterm",100);
+    // only send the data once per session
+    eq(analytics.adobe._pairs["eVar3"],10);
+    analytics.reset();
+    analytics.search("searchterm2",0);
+    eq(analytics.adobe._pairs["eVar3"],"no search results");
+});
+
+test("analytics.campaign",function(){
+    analytics.reset();
+    analytics.campaignEnd();
+    analytics.campaignStart("mycampaign");
+    eq(analytics.adobe.s.campaign,"mycampaign");
+});
+
+test("analytics.newrepeat",function(){
+    analytics.reset();
+    analytics.util.delCookie('s_nr');
+    analytics._init();
+    eq(analytics.adobe._pairs["eVar4"],"new");
+});
+
+
+
+
+test("analytics.paths",function(){
+    var PathParser = window.analytics.PathParser;
+    var host = 'http://'+document.location.hostname;
+    var path = new PathParser({},host+'/');
+    eq(path.folder(0),'');
+    eq(path.folder(1),'');
+    var path = new PathParser({},host+'/folder1/');
+    eq(path.folder(0),'folder1');
+    eq(path.folder(1),'');
+    var path = new PathParser({},host+'/FOLDER1/FOLDER2/');
+    eq(path.folder(0),'folder1');
+    eq(path.folder(1),'folder2');
+    eq(path.folder(0,1),'folder1 : folder2');
+    var path = new PathParser({},host+'/folder1/filename.html?http://www.hbs.edu/testing/');
+    eq(path.folder(0),'folder1');
+    eq(path.folder(1),'');
+    var path = new PathParser({},host+'/folder1/Pages/filename.aspx#http://www.hbs.edu/');
+    eq(path.folder(0),'folder1');
+    eq(path.folder(1),'');
+    var path = new PathParser({},host+'/folder1/Documents/file.jpg');
+    eq(path.folder(0),'folder1');
+    eq(path.folder(1),'');
+    var path = new PathParser({},'http://www.hbs.edu/folder1/Documents/file.jpg');
+    eq(path.folder(0),'');
+    eq(path.folder(1),'');
+    var path = new PathParser({baseUrl:'/folder1/'},host+'/');
+    eq(path.folder(0),'');
+    eq(path.folder(1),'');
+    var path = new PathParser({baseUrl:'/folder1/'},host+'/folder1/');
+    eq(path.folder(0),'');
+    eq(path.folder(1),'');
+    var path = new PathParser({baseUrl:'/folder1/'},host+'/folder1/folder2/');
+    eq(path.folder(0),'folder2');
+    eq(path.folder(1),'');
+});
+
+
+
+
+var PAGETEST = ["test_campaigns","test_offsite","test_staff_isadmin","test_staff_isnotadmin","test_staff_userdata","test_faculty_userdata","test_links","test_lastprofile_p1"];
+PAGETEST.push("test_share");
+PAGETEST.push("test_clickpast");
+
+for (var i = 0; i<PAGETEST.length;i++) {
+    name = PAGETEST[PAGETEST.length-i-1];
+    test("analytics "+name,function(){
+        name = PAGETEST.pop();
+        document.getElementById("iframe").src = "testcases/"+name+".html";
+        //alert(document.getElementById('iframe').src);
+        expect(1);
+        stop();
+
+        setTimeout(function(){
+            equal(document.getElementById("iframe").contentWindow.ERRORS.length,0,"all inner test pass");
+            start();
+        },3000);
+
+    });
+}
+
+/*
+ * for browsers that don't support logging
+ */
+if(typeof console === 'undefined' || typeof console.info === 'undefined') {
+    var names = ["log", "debug", "info", "warn", "error", "assert","dir", "dirxml", "group","groupEnd", "time", "timeEnd", "count", "trace","profile","profileEnd"];
+    window.console = {};
+    for (var i = 0; i <names.length; ++i) window.console[names[i]] = function() {};
+}
+
+
+
+</script>
+</head>
+<body>
+
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+
+<iframe id="iframe" width="100px" height="100px"></iframe>
+
+</body>
+</html>
+
+
+

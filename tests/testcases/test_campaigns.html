@@ -1,0 +1,37 @@
+test campaigns
+<script type="text/javascript" src="../packages/analytics.testutils.js"></script>
+<script type="text/javascript">
+
+setCookie("HBSCOOKIE","jgriffith@bschool.hbs.edu:1212670496:CntxY8/ZvtY8srK0JZFwr3M7C.rIoibczfJU1ls");
+
+
+window.setTimeout(function(){
+   assertTrue("Has campaign?",analytics.user.campaign == "testcampaign");
+
+   analytics.view("/test.html");
+
+
+   ok();
+},2500);
+</script>
+
+
+<script type="text/javascript" src="../analytics.js"></script>
+<script type="text/javascript">
+analytics.settings(
+       {profile:'test'
+       }
+);
+
+analytics.user.clearCampaign();
+assertTrue("Has no campaign?",analytics.user.campaign == "None");
+
+analytics.campaignStart("testcampaign");
+assertTrue("Has testcampaign?",analytics.user.campaign == "testcampaign");
+
+analytics.conversion("conversionevent");
+
+</script>
+
+
+
