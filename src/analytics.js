@@ -620,6 +620,11 @@ var Analytics = {
         Analytics._preSave(function(){
             refiners = refiners || [];
             var refinerstr = refiners.join(' > ');
+            var refinerNames = [];
+            for (var i = 0;i<refiners.length;i++){
+                var n = refiners[i].split(/\s*:\s*/)[0];
+                if (n) refinerNames.push(n)
+            }  
             var term = query + refinerstr;
             if (s.getValOnce(term,"s_qt")) {
                 Adobe.set('prop4',query);
@@ -628,7 +633,8 @@ var Analytics = {
                 if (refiners.length > 0) {
                     Adobe.set('list1',unescape(refiners.join('|').replace(/,/g,'').replace(/\|/g,','))); // individual queries
                     Adobe.set('prop21',unescape(refinerstr));  // pathing
-                }
+                    Adobe.set('list3',unescape(refinerNames.join(','))); // individual queries
+                }  
                 if (numresults == 0) {
                     Adobe.set('eVar3','no search results');
                     Adobe.appendEvent('event2');

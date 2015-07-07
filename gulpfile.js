@@ -19,7 +19,7 @@ var opts = {
 
 gulp.task('build', function() {
    return gulp.src(['src/*.js'])
-   .pipe(uglify({preserveComments: 'some'}))
+   //.pipe(uglify({preserveComments: 'some'}))
    .pipe(header(opts.banner, { pkg: opts.pkg, date: opts.dt, user: opts.username } ))
    .pipe(gulp.dest(opts.dist));
 })
