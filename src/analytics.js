@@ -178,7 +178,7 @@ var Analytics = {
             Adobe.set('prop8','guest');
             Adobe.set('eVar10',"D=c8"); //dynamic prop8
             Adobe.set('eVar9','anonymous');
-        }
+        } 
 
         if (User.eePersonID) {
             Adobe.set('eVar36',User.eePersonID);
@@ -201,7 +201,7 @@ var Analytics = {
         Adobe.set('eVar20',Util.getBrowser());
         Adobe.set('eVar23',Util.getReferringDomain());
         Adobe.set('eVar24',Util.getReferringSearchEngine());
-        Adobe.set('eVar32',Analytics.options.eventID);
+        Adobe.set('eVar32',Analytics.options.eventID,true);
         Adobe.set("eVar17",Analytics.options.engagement);
         Adobe.set("eVar26",Analytics.options.testSegment);
         Adobe.set('eVar36',Analytics.options.eePersonID);
@@ -899,8 +899,14 @@ var Adobe = {
         }
     },
 
-    set: function(name,val) {
-        if (typeof val === 'string' && val.indexOf('D=') != 0) val = Util.trim(val.toLowerCase());
+    set: function(name,val,caseSensitive) {
+        if (typeof val === 'string' && val.indexOf('D=') != 0) {
+            if (caseSensitive) {
+                val = Util.trim(val);
+            } else {
+                val = Util.trim(val.toLowerCase());
+            }
+        }
         Adobe._pairs[name] = val;
         if (Adobe.s) {
             Adobe.s[name] = val;
