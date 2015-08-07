@@ -212,7 +212,7 @@ var Analytics = {
            Adobe.set("eVar4",Util.getNewRepeat(365,"s_nr"+Analytics.options.profile,Analytics.options.baseUrl));
            Adobe.set("eVar14",Util.getVisitNum(Analytics.options.profile,Analytics.options.baseUrl));
         }
-
+ 
         Adobe.set("eVar6",window.s.getTimeParting('d','-5') + " " + window.s.getTimeParting('h','-5'));
         Adobe.set("eVar7",Util.timestamp());
         Adobe.set("eVar31",Util.timestamp(1));
@@ -356,12 +356,6 @@ var Analytics = {
                Adobe.appendEvent("event19");
            }
         }
-
-        //Adobe.s.channelManager('cid');
-        //if(Adobe.s._channel) {            
-        //    Adobe.set('eVar46',Adobe.s._keywords);
-        //    Adobe.set('eVar47',Adobe.s._partner);
-        //}
 
         Util.runQueue(Analytics._preSaveQueue);
         Analytics._presaveQueueEmptied = true;
@@ -569,7 +563,7 @@ var Analytics = {
                 if (name == 'wksignup') Adobe.appendEvent("event32");  // legacy   
 
                 Adobe.set('eVar36',Analytics.options.eePersonID);
-                Adobe.set('eVar32',Analytics.options.eventID);
+                Adobe.set('eVar32',Analytics.options.eventID, true);
                 Adobe.set('eVar39',Analytics.options.bypassFormCookie);
 
                 Adobe.set("eVar25","D=c12");
@@ -686,6 +680,17 @@ var Analytics = {
 
     campaignEnd: function() {
         User.clearCampaign();
+    },
+
+    surveyCompleted: function(name,val) {
+        Analytics._postSave(function() {
+            if (name && val) {
+                Adobe.appendEvent("event34"); 
+                Adobe.set("eVar46",name);
+                Adobe.set("eVar47",name + ' = ' + val)
+                Adobe.trackLink(name);
+            }
+        });
     },
 
     conversion: function(name) {
