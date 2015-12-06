@@ -149,7 +149,7 @@ var Analytics = {
         Adobe.init(Analytics.options,User);
         Adobe.set("eVar28","D=g");  // save page URL 
         Adobe.set("prop25","D=g");  // enable pathing
-        Adobe.set("eVar16","D=s_vi");  // save visitor ID
+        Adobe.set("eVar16","D=mid");  // save visitor ID 
 
         if (User.role) {
             Adobe.set('prop9',User.role);
