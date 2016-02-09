@@ -1793,7 +1793,9 @@ window.analytics.path = new PathParser(analytics.options,document.location.href)
 window.analytics.PathParser = PathParser;
 window.analytics.util = Util;
 Util.addEvent(window,'load',Analytics.save)
-Util.addEvent(window,'load',Analytics._checkImages);
+Util.addEvent(window,'load',function(){
+    window.setTimeout(Analytics._checkImages,5000);
+});
 Util.addEvent(window,'load',Analytics._checkLoadTime);
 if (!window.onerror) window.onerror = Analytics.onerror;
 Analytics._preinit();
