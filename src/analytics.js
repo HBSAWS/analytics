@@ -2089,6 +2089,14 @@ t.I)}catch(G){}}}Visitor.getInstance=function(m,s){var a,l=window.s_c_il,j;0>m.i
     s.visitor = Visitor.getInstance("B08C1C8B533094750A490D4D@AdobeOrg");
     
     /*
+        s.visitor = Visitor.getInstance("B08C1C8B533094750A490D4D@AdobeOrg",{
+        marketingCloudServer: s.trackingServer,
+        marketingCloudServerSecure: s.trackingServerSecure
+    });
+    */
+
+
+    /*
      * Plugin: Cookie Merging 
      */
     s.c_rr=s.c_r;
