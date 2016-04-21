@@ -559,8 +559,9 @@ var Analytics = {
                 if (name.indexOf('apply-') > -1) Adobe.appendEvent("event21");
                 if (name.indexOf('applypdf-') > -1) Adobe.appendEvent("event22");
                 if (name.indexOf('brochurepdf-') > -1) Adobe.appendEvent("event23");
-                if (name.indexOf('brochure-request') > -1) Adobe.appendEvent("event24");
+                if (name.indexOf('brochure-request-') > -1) Adobe.appendEvent("event24");
                 if (name == 'brochurepdf') Adobe.appendEvent("event33");
+                if (name == 'brochure-request') Adobe.appendEvent("event35"); 
                 if (name.indexOf('leadgen') > -1) Adobe.appendEvent("event25");                
                 if (name == 'newsletter-subscribe') Adobe.appendEvent("event32"); 
                 if (name == 'wksignup') Adobe.appendEvent("event32");  // legacy   
