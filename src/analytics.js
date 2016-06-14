@@ -665,7 +665,7 @@ var Analytics = {
         User.setCampaign(cid);
         Analytics._newCampaign = cid;
         cid = s.getValOnce(cid,"s_co");
-        if (mktchannel) Adobe.set("prop16",mktchannel);
+        //if (mktchannel) Adobe.set("prop16",mktchannel);
         if (cid) s.campaign = cid.toLowerCase();
         /*
         - the s.campaign value is the value that is being stacked
@@ -679,6 +679,9 @@ var Analytics = {
             s.eVar33=s.crossVisitParticipation(s.campaign, "s_v33", "365", "9", ">", "", 1); // campaign stack
             s.eVar34=s.campaign; // first touch
             s.eVar35=s.campaign; // last touch
+        }
+        if (mktchannel) {
+            s.eVar40=s.crossVisitParticipation(mktchannel.toLowerCase(), "s_v40", "365", "9", ">", "", 1); // campaign stack
         }
     },
 
