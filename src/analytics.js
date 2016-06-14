@@ -162,10 +162,6 @@ var Analytics = {
             Adobe.set('eVar11','D=c9');
             Adobe.set('eVar8','D=c9');
         }
-        if (User.referrerId) {
-            Adobe.set('eVar48',User.referrerId);
-            User.clearReferrerId();
-        }
         if (User.id) {
             Adobe.set('visitorID',Util.obfuscate(User.id));
             Adobe.set("eVar16","D=vid");
@@ -391,6 +387,15 @@ var Analytics = {
             Util.delCookie("AnalyticsEvent");
         }
 
+        if (User.referrerId) {
+            Adobe.set('eVar48',User.referrerId);
+            User.clearReferrerId();
+        }
+        if (User.linkType) {
+            Adobe.set('eVar37',User.linkType);
+            User.clearLinkType();
+        }
+
         Adobe.trackPage();
       
         // send a noresults event for the search engine
@@ -434,6 +439,17 @@ var Analytics = {
             Adobe.set('referrer',Util.urlnormalize(document.location.href));
             Google.each(function(ga){ga._trackPageview(Util.gaPath(path,'offsite'))});
         }
+
+        // for offsite links
+        if (User.referrerId) {
+            Adobe.set('eVar48',User.referrerId);
+            User.clearReferrerId();
+        }
+        if (User.linkType) {
+            Adobe.set('eVar37',User.linkType);
+            User.clearLinkType();
+        }
+
         if (opt.isDownload) {
             Adobe.appendEvent('event5');
             var name = Util.getPageName(abspath);
@@ -564,7 +580,17 @@ var Analytics = {
                 if (name == 'brochure-request') Adobe.appendEvent("event35"); 
                 if (name.indexOf('leadgen') > -1) Adobe.appendEvent("event25");                
                 if (name == 'newsletter-subscribe') Adobe.appendEvent("event32"); 
-                if (name == 'wksignup') Adobe.appendEvent("event32");  // legacy   
+                if (name == 'wksignup') Adobe.appendEvent("event32");  // legacy 
+
+                // for mailto link events
+                if (User.referrerId) {
+                    Adobe.set('eVar48',User.referrerId);
+                    User.clearReferrerId();
+                }
+                if (User.linkType) {
+                    Adobe.set('eVar37',User.linkType);
+                    User.clearLinkType();
+                }
 
                 Adobe.set('eVar36',Analytics.options.eePersonID);
                 Adobe.set('eVar32',Analytics.options.eventID, true);
@@ -640,6 +666,13 @@ var Analytics = {
                     Adobe.set('eVar3',numresults);
                 }
                 Adobe.appendEvent('event1');
+                if (query) {
+                    // search
+                    Adobe.appendEvent('event37');
+                } else {
+                    // browse
+                    Adobe.appendEvent('event38');
+                }
             } 
             if (Analytics._presaveQueueEmptied) Adobe.trackLink();
         })
@@ -854,8 +887,17 @@ var Analytics = {
         options.isOffsite = Util.isOffsite(a);
         Analytics._userClicked = true; // prevent the checking of images 404
         if (a.id) {
-            // remember the link clicked on for reporting
+            // remember the link name for reporting
             User.setReferrerId(a.id);
+        }
+        if (a.getAttribute('rel')) {
+            // remember the link type for reporting
+            var t = a.getAttribute('rel');
+            t = t.replace('search-result','');
+            t = t.replace(/^\s+|\s+$/gm,'');  // trim
+            if (t) {
+                User.setLinkType(t);
+            }
         }
         if (a && a.href && a.href.indexOf('mailto:') == 0) {
             Analytics.event('mailto');
@@ -863,7 +905,7 @@ var Analytics = {
         // queue event on next page
         if (a.rel && a.rel.indexOf('search-result') > -1) {
             var cookie_date = new Date ();
-            cookie_date.setTime ( cookie_date.getTime() + (1000 * 20) );
+            cookie_date.setTime ( cookie_date.getTime() + (1000 * 20) );  // 20 sec
             document.cookie = "AnalyticsEvent=event14 ; expires=" + cookie_date.toGMTString() + "; domain=.hbs.edu; path=/";
         }
         if (options.isDownload || options.isOffsite) {
@@ -1014,7 +1056,7 @@ var User = {
    referrerId: null,
    lastPageName: null,
 
-   cached: ['role','roleDetail','id','campaign','lastprofile','lastsite','lasturl','startTime', 'personID','referrerId'],   
+   cached: ['role','roleDetail','id','campaign','lastprofile','lastsite','lasturl','startTime', 'personID','referrerId','linkType'],   
 
    init: function() {
      arguments.callee.done = true
@@ -1053,6 +1095,16 @@ var User = {
    },
 
    clearReferrerId: function() {
+     User.referrerId = null;
+     User.store();
+   },
+
+   setLinkType: function(id) {
+     User.linkType = id;
+     User.store();
+   },
+
+   clearLinkType: function() {
      User.referrerId = null;
      User.store();
    },
