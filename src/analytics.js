@@ -163,8 +163,8 @@ var Analytics = {
             Adobe.set('eVar8','D=c9');
         }
         if (User.id) {
-            Adobe.set('visitorID',Util.obfuscate(User.id));
-            Adobe.set("eVar16","D=vid");
+            //Adobe.set('visitorID',Util.obfuscate(User.id));
+            //Adobe.set("eVar16","D=vid");
             if (User.personID) {
                 Adobe.set('prop8',User.personID);
             }
@@ -262,8 +262,9 @@ var Analytics = {
         Adobe.set('eVar56',"D=ch");
 
         var level1 = (!ignoreOptions && Analytics.options.level1) || Analytics.path.folder(0,1);
-        if (level1) { Adobe.set('prop2',level1); }
+        if (level1) { Adobe.set('prop2',level1);  }
         else { Adobe.set('prop2',null); }
+        Adobe.set('eVar38',"D=c2");
 
         var level2 = (!ignoreOptions && Analytics.options.level2) || Analytics.path.folder(0,2);
         if (level2) { Adobe.set('prop3',level2); }
@@ -456,6 +457,7 @@ var Analytics = {
             Adobe.set('eVar5',name);
             Adobe.trackLink('d',name);
         } else if (opt.isOffsite) {
+            Adobe.appendEvent('event39');
             Adobe.trackLink('e',abspath);
         } else {
             Adobe.trackLink('o',abspath);
