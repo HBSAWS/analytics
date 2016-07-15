@@ -575,6 +575,7 @@ var Analytics = {
                 Adobe.set("prop12",name);
 
                 if (name.indexOf('apply-') > -1) Adobe.appendEvent("event21");
+                if (name.indexOf('apply2-') > -1) Adobe.appendEvent("event40");
                 if (name.indexOf('applypdf-') > -1) Adobe.appendEvent("event22");
                 if (name.indexOf('brochurepdf-') > -1) Adobe.appendEvent("event23");
                 if (name.indexOf('brochure-request-') > -1) Adobe.appendEvent("event24");
