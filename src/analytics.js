@@ -300,10 +300,11 @@ var Analytics = {
         }
     },
 
-    save: function() {
+    save: function(opts) {
         // When page has finished loading, send the data
         // quit if this function has already been called
-        if (arguments.callee.done) return;
+        var opts = opts || {};
+        if (arguments.callee.done && !opts.force) return;
         arguments.callee.done = true;
 
         // reset the global s variable if someone overwrote it
