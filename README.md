@@ -8,6 +8,11 @@ HTTP script reference
 <script src="https://secure.hbs.edu/static/js/analytics.js"></script>
 ```
 
+## Adobe Debugger
+
+https://marketing.adobe.com/resources/help/en_US/sc/implement/debugger_install.html
+
+
 ## Async Loading
 
 ```html
