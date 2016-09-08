@@ -398,6 +398,8 @@ var Analytics = {
             User.clearLinkType();
         }
 
+        Adobe.set('eVar41','D=r');  // store referrer in an eVar
+
         Adobe.trackPage();
       
         // send a noresults event for the search engine
