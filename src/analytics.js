@@ -892,13 +892,13 @@ var Analytics = {
         options.isDownload = Util.isDownload(a);
         options.isOffsite = Util.isOffsite(a);
         Analytics._userClicked = true; // prevent the checking of images 404
-        if (a.id) {
+        if (a.getAttribute('data-link-id') || a.id) {
             // remember the link name for reporting
-            User.setReferrerId(a.id);
+            User.setReferrerId(a.getAttribute('data-link-id') || a.id);
         }
-        if (a.getAttribute('rel')) {
+        if (a.getAttribute('data-rel') || a.getAttribute('rel')) {
             // remember the link type for reporting
-            var t = a.getAttribute('rel');
+            var t = a.getAttribute('data-rel') || a.getAttribute('rel');
             t = t.replace('search-result','');
             t = t.replace(/^\s+|\s+$/gm,'');  // trim
             if (t) {
@@ -1028,13 +1028,17 @@ var Adobe = {
 
     clearEvents: function(){
         // clear things we don't want sent multiple times
+        Adobe.set('events',null);
         Adobe.set('list1',null);
         Adobe.set('list2',null);
-        Adobe.set('events',null);
-        Adobe.set('prop21',null);
-        Adobe.set('prop4',null);
-        Adobe.set('eVar57',null);
         Adobe.set('eVar3',null);
+        Adobe.set('prop4',null);
+        Adobe.set('prop12',null);
+        Adobe.set('prop21',null);
+        Adobe.set('eVar25',null);
+        Adobe.set('evar37',null);
+        Adobe.set('evar48',null);
+        Adobe.set('eVar57',null);
     },
 
     reset: function() {
@@ -1111,9 +1115,9 @@ var User = {
    },
 
    clearLinkType: function() {
-     User.referrerId = null;
+     User.linkType = null;
      User.store();
-   },
+   }, 
    
    startTimer: function() {
      var start = (new Date()).getTime();
