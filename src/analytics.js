@@ -254,6 +254,9 @@ var Analytics = {
         Adobe.set('pageName',pageName);
         Adobe.set('eVar1',"D=pageName");
 
+        Adobe.set('prop26',pageName.split('?')[0]) //root page
+        Adobe.set('eVar42','D=c26') 
+
         Analytics.path = new PathParser(analytics.options,url);
         var level0 = (!ignoreOptions && Analytics.options.level0) || Analytics.path.folder(0);
         if (level0) { Adobe.set('channel',level0); }
