@@ -13,7 +13,7 @@ var Analytics = {
     options: {
    
         // the parameter that triggers a search event
-        searchParams: ['qt','q'],
+        searchParams: ['qt','q','query'],
 
         // parameters that uniquely identify new pages 
         pageParams: [],
@@ -594,11 +594,11 @@ var Analytics = {
                 // for mailto link events
                 if (User.referrerId) {
                     Adobe.set('eVar48',User.referrerId);
-                    User.clearReferrerId();
+                    //User.clearReferrerId(); disable for myhbs stacked events
                 }
                 if (User.linkType) {
                     Adobe.set('eVar37',User.linkType);
-                    User.clearLinkType();
+                    //User.clearLinkType(); disable for myhbs stacked events
                 }
 
                 Adobe.set('eVar36',Analytics.options.eePersonID);
@@ -902,7 +902,6 @@ var Analytics = {
         if (a.getAttribute('data-rel') || a.getAttribute('rel')) {
             // remember the link type for reporting
             var t = a.getAttribute('data-rel') || a.getAttribute('rel');
-            t = t.replace('search-result','');
             t = t.replace(/^\s+|\s+$/gm,'');  // trim
             if (t) {
                 User.setLinkType(t);
