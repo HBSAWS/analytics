@@ -149,7 +149,7 @@ var Analytics = {
         Adobe.init(Analytics.options,User);
         Adobe.set("eVar28","D=g");  // save page URL 
         Adobe.set("prop25","D=g");  // enable pathing
-        Adobe.set("eVar16","D=mid");  // save visitor ID 
+        //Adobe.set("eVar16","D=mid");  // save visitor ID 
 
         if (User.role) {
             Adobe.set('prop9',User.role);
@@ -161,10 +161,10 @@ var Analytics = {
             Adobe.set('prop9',User.role + " : " + User.roleDetail);  // get as specific as possible in the prop9
             Adobe.set('eVar11','D=c9');
             Adobe.set('eVar8','D=c9');
-        }
+        } 
         if (User.id) {
-            //Adobe.set('visitorID',Util.obfuscate(User.id));
-            //Adobe.set("eVar16","D=vid");
+            Adobe.set('visitorID',Util.obfuscate(User.id));
+            Adobe.set("eVar16","D=vid"); 
             if (User.personID) {
                 Adobe.set('prop8',User.personID);
             }
