@@ -394,6 +394,7 @@ var Analytics = {
 
         if (User.referrerId) {
             Adobe.set('eVar48',User.referrerId);
+            Adobe.appendEvent("event41");
             User.clearReferrerId();
         }
         if (User.linkType) {
@@ -450,6 +451,7 @@ var Analytics = {
         // for offsite links
         if (User.referrerId) {
             Adobe.set('eVar48',User.referrerId);
+            Adobe.appendEvent("event41");
             User.clearReferrerId();
         }
         if (User.linkType) {
@@ -594,6 +596,7 @@ var Analytics = {
                 // for mailto link events
                 if (User.referrerId) {
                     Adobe.set('eVar48',User.referrerId);
+                    Adobe.appendEvent("event41");
                     //User.clearReferrerId(); disable for myhbs stacked events
                 }
                 if (User.linkType) {
