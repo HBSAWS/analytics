@@ -692,12 +692,14 @@ var Analytics = {
    
     onerror: function(errorMsg, url, lineNumber){
         var msg = ''
-        if (url) msg = ' : '+Util.filename(url);
-        if (lineNumber > 0) msg = msg + ':' + lineNumber
-        Analytics._postSave(function() {
-            msg = 'jserror'+ msg;
-            Analytics.error(msg,msg + ' : ' + document.location.href  + " : " + errorMsg + " on " + Util.getBrowser());
-        });
+        if (typeof url === 'string') {
+            if (url) msg = ' : '+Util.filename(url);
+            if (lineNumber > 0) msg = msg + ':' + lineNumber
+            Analytics._postSave(function() {
+                msg = 'jserror'+ msg;
+                Analytics.error(msg,msg + ' : ' + document.location.href  + " : " + errorMsg + " on " + Util.getBrowser());
+            });
+        }
     },
 
     itg: function(v) {
@@ -1728,6 +1730,7 @@ var Util = {
     },
 
     filename: function(url) {
+        if (!url) return '';
         return url.substring(url.lastIndexOf('/') + 1);
     },
 
