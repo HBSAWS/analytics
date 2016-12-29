@@ -10,7 +10,7 @@ if (window.analytics) return;
 
 var Analytics = {
 
-    options: {
+    options: {  
    
         // the parameter that triggers a search event
         searchParams: ['qt','q','query'],
@@ -2068,6 +2068,12 @@ s.visitor = Visitor.getInstance("B08C1C8B533094750A490D4D@AdobeOrg");
 s.u_warn = function(msg) {
 	if (window.console && window.console.warn) window.console.warn(msg + " is removed");
 }
+
+/* Plugin: getValOnce_v1.1 */
+s.getValOnce=new Function("v","c","e","t",""
++"var s=this,a=new Date,v=v?v:'',c=c?c:'s_gvo',e=e?e:0,i=t=='m'?6000"
++"0:86400000;k=s.c_r(c);if(v){a.setTime(a.getTime()+e*i);s.c_w(c,v,e"
++"==0?0:a);}return v==k?'':v");
 
 /* Plugin: getTimeParting 2.1  */
 s.getTimeParting=new Function("t","z","y","l","j",""
