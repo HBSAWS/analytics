@@ -163,16 +163,14 @@ var Analytics = {
             Adobe.set('eVar8','D=c9');
         } 
         if (User.id) {
-            //Adobe.set('visitorID',Util.obfuscate(User.id));
-            //Adobe.set("eVar16","D=vid"); 
-            //if (User.personID) {
-                //Adobe.set('prop8',User.personID);
-            //}
-            //Adobe.set('eVar10',"D=c8"); //dynamic prop8
+            if (User.personID) {
+                Adobe.set('visitorID',User.personID);
+                Adobe.set("eVar16","D=vid"); 
+                Adobe.set('prop8',User.personID);
+            }
             Adobe.set('eVar9','logged in');
         } else {
-            //Adobe.set('prop8','guest');
-            //Adobe.set('eVar10',"D=c8"); //dynamic prop8
+            Adobe.set('prop8','guest');
             Adobe.set('eVar9','anonymous');
         } 
 
