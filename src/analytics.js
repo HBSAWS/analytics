@@ -621,10 +621,9 @@ var Analytics = {
     // starts the stopwatch
     mediaPlay: function(mediaName) {
         var sw = Analytics._stopWatches[mediaName];
-        if (!sw) {
-            sw = new StopWatch();
-            Analytics._stopWatches[mediaName] = sw;
-        }
+        if (sw) return; // already played the video
+        sw = new StopWatch();
+        Analytics._stopWatches[mediaName] = sw;
         sw.start();
     },
 
@@ -642,7 +641,6 @@ var Analytics = {
         Adobe.appendEvent("event18="+sw.duration());
         Adobe.set("eVar49",sw.duration());
         Adobe.set("eVar50","page");
-        sw.reset();
         if (milestone >= 100) Adobe.appendEvent("event8");
         else if (milestone >= 75) Adobe.appendEvent("event11");
         else if (milestone >= 50) Adobe.appendEvent("event10");
@@ -920,6 +918,11 @@ var Analytics = {
             var cookie_date = new Date ();
             cookie_date.setTime ( cookie_date.getTime() + (1000 * 20) );  // 20 sec
             document.cookie = "AnalyticsEvent=event14 ; expires=" + cookie_date.toGMTString() + "; domain=.hbs.edu; path=/";
+        }
+        if (a.rel && a.rel.indexOf('bestbet') > -1) {
+            var cookie_date = new Date ();
+            cookie_date.setTime ( cookie_date.getTime() + (1000 * 20) );  // 20 sec
+            document.cookie = "AnalyticsEvent=event36 ; expires=" + cookie_date.toGMTString() + "; domain=.hbs.edu; path=/";
         }
         if (options.isDownload || options.isOffsite) {
             if (Util.isLink(a)) {
