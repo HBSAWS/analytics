@@ -277,6 +277,7 @@ var Analytics = {
         var prevPage = s.getPreviousValue(s.pageName,"s_pv") || '[No Previous Value]';
         if (prevPage) Adobe.set('eVar12',"D=c6");
         if (prevPage) Adobe.set("prop6",prevPage);
+        if (prevPage) Adobe.set("prop27",s.getPercentPageViewed());
 
         var prevURL = s.getPreviousValue(url,"s_pvu") || '[No Previous Value]';
         if (prevURL) Adobe.set('eVar30',prevURL);
@@ -634,6 +635,11 @@ var Analytics = {
 
     // tracks media progress
     mediaMilestone: function(mediaName,milestone) {
+
+        var key = mediaName + milestone
+        if (Analytics._view_seen[key]) {return;}
+        Analytics._view_seen[key] = 1 
+
         var sw = Analytics._stopWatches[mediaName] || new StopWatch();
         Adobe.set("eVar19",mediaName);
         Adobe.set("prop24","D=v19");
@@ -2136,6 +2142,41 @@ s.getVisitStart=new Function("c",""
 s.clickPast = function(){
 	s.u_warn("clickPast")
 }
+
+
+/*
+ * Plugin: getPercentPageViewed v1.71
+ */
+s.getPercentPageViewed=new Function("n",""
++"var s=this,W=window,EL=W.addEventListener,AE=W.attachEvent,E=['load"
++"','unload','scroll','resize','zoom','keyup','mouseup','touchend','o"
++"rientationchange','pan'];W.s_Obj=s;s_PPVid=(n=='-'?s.pageName:n)||s"
++".pageName||location.href;if(!W.s_PPVevent){s.s_PPVg=function(n,r){v"
++"ar k='s_ppv',p=k+'l',c=s.c_r(n||r?k:p),a=c.indexOf(',')>-1?c.split("
++"',',10):[''],l=a.length,i;a[0]=unescape(a[0]);r=r||(n&&n!=a[0])||0;"
++"a.length=10;if(typeof a[0]!='string')a[0]='';for(i=1;i<10;i++)a[i]="
++"!r&&i<l?parseInt(a[i])||0:0;if(l<10||typeof a[9]!='string')a[9]='';"
++"if(r){s.c_w(p,c);s.c_w(k,'?')}return a};W.s_PPVevent=function(e){va"
++"r W=window,D=document,B=D.body,E=D.documentElement,S=window.screen|"
++"|0,Ho='offsetHeight',Hs='scrollHeight',Ts='scrollTop',Wc='clientWid"
++"th',Hc='clientHeight',C=100,M=Math,J='object',N='number',s=W.s_Obj|"
++"|W.s||0;e=e&&typeof e==J?e.type||'':'';if(!e.indexOf('on'))e=e.subs"
++"tring(2);s_PPVi=W.s_PPVi||0;if(W.s_PPVt&&!e){clearTimeout(s_PPVt);s"
++"_PPVt=0;if(s_PPVi<2)s_PPVi++}if(typeof s==J){var h=M.max(B[Hs]||E[H"
++"s],B[Ho]||E[Ho],B[Hc]||E[Hc]),X=W.innerWidth||E[Wc]||B[Wc]||0,Y=W.i"
++"nnerHeight||E[Hc]||B[Hc]||0,x=S?S.width:0,y=S?S.height:0,r=M.round("
++"C*(W.devicePixelRatio||1))/C,b=(D.pageYOffset||E[Ts]||B[Ts]||0)+Y,p"
++"=h>0&&b>0?M.round(C*b/h):0,O=W.orientation,o=!isNaN(O)?M.abs(o)%180"
++":Y>X?0:90,L=e=='load'||s_PPVi<1,a=s.s_PPVg(s_PPVid,L),V=function(i,"
++"v,f,n){i=parseInt(typeof a==J&&a.length>i?a[i]:'0')||0;v=typeof v!="
++"N?i:v;v=f||v>i?v:i;return n?v:v>C?C:v<0?0:v};if(new RegExp('(iPod|i"
++"Pad|iPhone)').exec(navigator.userAgent||'')&&o){o=x;x=y;y=o}o=o?'P'"
++":'L';a[9]=L?'':a[9].substring(0,1);s.c_w('s_ppv',escape(W.s_PPVid)+"
++"','+V(1,p,L)+','+(L||!V(2)?p:V(2))+','+V(3,b,L,1)+','+X+','+Y+','+x"
++"+','+y+','+r+','+a[9]+(a[9]==o?'':o))}if(!W.s_PPVt&&e!='unload')W.s"
++"_PPVt=setTimeout(W.s_PPVevent,333)};for(var f=W.s_PPVevent,i=0;i<E."
++"length;i++)if(EL)EL(E[i],f,false);else if(AE)AE('on'+E[i],f);f()};v"
++"ar a=s.s_PPVg();return!n||n=='-'?a[1]:a");
 
 /*
  * Plugin: getPreviousValue_v1.0 - return previous value of designated

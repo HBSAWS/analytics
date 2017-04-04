@@ -252,6 +252,8 @@ var Analytics = {
         Adobe.set('pageName',pageName);
         Adobe.set('eVar1',"D=pageName");
 
+
+
         Adobe.set('prop26',pageName.split('?')[0]) //root page
         Adobe.set('eVar42','D=c26') 
 
@@ -633,6 +635,10 @@ var Analytics = {
 
     // tracks media progress
     mediaMilestone: function(mediaName,milestone) {
+        var key = mediaName + milestone
+        if (Analytics._view_seen[key]) {return;}
+        Analytics._view_seen[key] = 1 
+        
         var sw = Analytics._stopWatches[mediaName] || new StopWatch();
         Adobe.set("eVar19",mediaName);
         Adobe.set("prop24","D=v19");
