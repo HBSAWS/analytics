@@ -5,3 +5,4 @@ ignore-*
 node_modules/
 dist/
 Thumbs.db
+src/analytics - Copy.js

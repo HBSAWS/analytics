@@ -303,6 +303,31 @@ var Analytics = {
         }
     },
 
+    metadata: function(data) {
+
+        var keys = [];
+        for (var k in data) {
+          if (data.hasOwnProperty(k)) {
+            keys.push(k);
+          }
+        }
+        keys.sort();
+        console.info('keys',keys);
+
+        function cleanstr(name) {
+            return name.toString().toLowerCase().replace(/ +/g,'-')
+        }
+
+        var metastr = [];
+        for (var i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          metastr.push(cleanstr(k) + ':' + cleanstr(data[k]))
+        }
+        metastr = '|' + metastr.join('|') + '|'
+        console.info('final metadata = ',metastr);
+        Adobe.set("eVar60",metastr);
+    },
+
     save: function(opts) {
         // When page has finished loading, send the data
         // quit if this function has already been called
@@ -756,6 +781,19 @@ var Analytics = {
         });
     },
 
+    autoCompleteClick: function(link,query){
+         var a;
+         if (typeof link.href == "string") {
+            a = link;
+         } else {
+            var a = document.createElement('a');
+            a.href = link;
+            a.rel = 'search-result'
+         }
+         analytics._linkClick.apply(a);
+         if (query) analytics.search(query);
+    },
+
     _postSaveQueue: [],
     _saveQueueEmptied: false,
     _postSave: function(action) {
@@ -797,6 +835,7 @@ var Analytics = {
 
     _storageEnabled: function(){
         try {
+            if (typeof sessionStorage == "undefined") return false;
             sessionStorage.setItem('test-key','test-value');
             if (sessionStorage.getItem('test-key') == 'test-value'){
                 return true;
@@ -2177,6 +2216,16 @@ s.getPercentPageViewed=new Function("n",""
 +"_PPVt=setTimeout(W.s_PPVevent,333)};for(var f=W.s_PPVevent,i=0;i<E."
 +"length;i++)if(EL)EL(E[i],f,false);else if(AE)AE('on'+E[i],f);f()};v"
 +"ar a=s.s_PPVg();return!n||n=='-'?a[1]:a");
+
+/* Plugin Utility: join v1.0 */
+s.join=function(v,p){var s=this;var f,b,d,w;if(p){f=p.front?p.front:"";b=p.back?p.back:"";d=p.delim?p.delim:"";w=p.wrap?p.wrap:""}var str="";for(var x=0;x<v.length;x++){if(typeof v[x]=="object")str+=s.join(v[x],p);else str+=w+v[x]+w;if(x<v.length-1)str+=d}return f+str+b};
+
+/*
+ *  Plug-in: crossVisitParticipation v1.8 (Minified)
+ */
+s.crossVisitParticipation=function(v,cn,ex,ct,dl,ev,dv){var s=this,ce;if(typeof cn==="undefined")cn="s_cvp";if(typeof ex==="undefined")ex=90;if(typeof dl==="undefined")dl=">";if(typeof ct==="undefined")ct=5;if(typeof dv==="undefined")dv=0;if(s.events&&ev){var ay=ev.split(",");var ea=s.events.split(",");var ayl=ay.length;var eal=ea.length;for(var u=0;u<ayl;u++)for(var x=0;x<eal;x++)if(ay[u]==ea[x])ce=1}if(typeof v==="undefined"||v==""){if(ce)s.c_w(cn,"");return""}v=encodeURIComponent(v);var arry=new Array,
+a=new Array,h=new Array;c=s.c_r(cn),g=0,arryl=0;if(c&&c!=""){arry=c.split("],[");arryl=arry.length;for(q=0;q<arryl;q++){z=arry[q];z=s.replace?s.replace(z,"[",""):s.repl(z,"[","");z=s.replace?s.replace(z,"]",""):s.repl(z,"]","");z=s.replace?s.replace(z,"'",""):s.repl(z,"'","");arry[q]=z.split(",")}}else arryl=0;var e=new Date;e.setFullYear(e.getFullYear()+5);if(dv==0&&arryl>0&&arry[arryl-1][0]==v)arry[arryl-1]=[v,(new Date).getTime()];else arry[arryl]=[v,(new Date).getTime()];arryl=arry.length;var start=
+arryl-ct<0?0:arryl-ct;var td=new Date;for(var x=start;x<arryl;x++){var diff=Math.round((td.getTime()-arry[x][1])/864E5);if(diff<ex){h[g]=decodeURIComponent(arry[x][0]);a[g]=[arry[x][0],arry[x][1]];g++}}var data=s.join(a,{delim:",",front:"[",back:"]",wrap:"'"});s.c_w(cn,data,e);var r=s.join(h,{delim:dl});if(ce)s.c_w(cn,"");return r};
 
 /*
  * Plugin: getPreviousValue_v1.0 - return previous value of designated

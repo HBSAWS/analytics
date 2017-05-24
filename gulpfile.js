@@ -3,6 +3,7 @@ var gulp = require('gulp'),
     header = require('gulp-header'),
     dateFormat = require('dateformat'),
     uglify = require('gulp-uglify'),
+    strip = require('gulp-strip-comments'),
     runSequence = require('run-sequence');
 
 var opts = {
@@ -19,7 +20,8 @@ var opts = {
 
 gulp.task('build', function() {
    return gulp.src(['src/*.js'])
-   //.pipe(uglify({preserveComments: 'some'}))
+   //.pipe(uglify({output: {beautify: true,indent_level: 0}}))
+   .pipe(strip())
    .pipe(header(opts.banner, { pkg: opts.pkg, date: opts.dt, user: opts.username } ))
    .pipe(gulp.dest(opts.dist));
 })
