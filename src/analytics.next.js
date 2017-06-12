@@ -178,6 +178,10 @@ var Analytics = {
             Adobe.set('eVar36',User.eePersonID);
         }
 
+        if (Analytics.options.siteRole) {
+            Adobe.set('eVar62',Analytics.options.siteRole);   
+        }
+
         if (Analytics.options.lastprofile && User.lastsite) {
             Adobe.set('server',User.lastsite);
         } else {
@@ -398,7 +402,24 @@ var Analytics = {
         }
 
         var cid = Util.getParam('cid');
-        if (cid) { Analytics.campaignStart(cid);}
+        if (cid) { 
+            Analytics.campaignStart(cid);
+        } else if (Util.getParam('utm_campaign') && Analytics.options.profile != 'exed') {
+            var cid = "|";
+            var utm_campaign = Util.getParam('utm_campaign');
+            if (utm_campaign) cid += "campaign:" + utm_campaign + "|";
+            var utm_content = Util.getParam('utm_content');
+            if (utm_content) cid += "content:" + utm_content + "|";
+            var utm_medium = Util.getParam('utm_medium');
+            if (utm_medium) cid += "medium:" + utm_medium + "|";
+            var utm_source = Util.getParam('utm_source');
+            if (utm_source) cid += "source:" + utm_source + "|";
+            var utm_term = Util.getParam('utm_term');
+            if (utm_term) cid += "term:" + utm_term;
+            cid += "|";
+            Analytics.campaignStart(cid);
+        }
+
 
         if (Analytics._newCampaign) {
             Adobe.set('prop23',Analytics._newCampaign + ':' + pageName);
@@ -1278,7 +1299,7 @@ var User = {
 
    _getRolesFromCookie: function() {
    
-     var hbscookie = Util.getCookie("HBSCOOKIE");
+     var hbscookie = Util.getCookie("HBSAnalytics") || Util.getCookie("HBSCOOKIE") ;
      var klass = User._getClassFromCookie(hbscookie);
      var decade = User._getDecadeFromClass(klass);
      
