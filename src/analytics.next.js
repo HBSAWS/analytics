@@ -783,6 +783,8 @@ var Analytics = {
 
     campaignEnd: function() {
         User.clearCampaign();
+        Util.delCookie('s_v33');
+        Util.delCookie('s_v40');
     },
 
     surveyCompleted: function(name,val) {
