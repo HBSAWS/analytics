@@ -156,19 +156,19 @@ var Analytics = {
             Adobe.set('eVar11','D=c9');
             Adobe.set('eVar8','D=c9'); // duplicate to fix bugginess, might remove later
             Adobe.set('eVar15',User.role);
+            Adobe.set('eVar9','logged in');
         }
         if (User.roleDetail) {
             Adobe.set('prop9',User.role + " : " + User.roleDetail);  // get as specific as possible in the prop9
             Adobe.set('eVar11','D=c9');
             Adobe.set('eVar8','D=c9');
         } 
-        if (User.id) {
+        if (User.role) {
             if (User.personID) {
                 Adobe.set('visitorID',User.personID);
                 Adobe.set("eVar16","D=vid"); 
                 Adobe.set('prop8',User.personID);
             }
-            Adobe.set('eVar9','logged in');
         } else {
             Adobe.set('prop8','guest');
             Adobe.set('eVar9','anonymous');
@@ -316,7 +316,6 @@ var Analytics = {
           }
         }
         keys.sort();
-        console.info('keys',keys);
 
         function cleanstr(name) {
             return name.toString().toLowerCase().replace(/ +/g,'-')
@@ -328,7 +327,7 @@ var Analytics = {
           metastr.push(cleanstr(k) + ':' + cleanstr(data[k]))
         }
         metastr = '|' + metastr.join('|') + '|'
-        console.info('final metadata = ',metastr);
+ 
         Adobe.set("eVar60",metastr);
     },
 
@@ -1137,28 +1136,18 @@ var Google = {
 var User = {
    role: null,
    roleDetail: null,
-   id: null,
    startTime: 0,
    campaign: "None",
    referrerId: null,
    lastPageName: null,
 
-   cached: ['role','roleDetail','id','campaign','lastprofile','lastsite','lasturl','startTime', 'personID','referrerId','linkType'],   
+   cached: ['role','roleDetail','campaign','lastprofile','lastsite','lasturl','startTime','referrerId','linkType'],   
 
    init: function() {
      arguments.callee.done = true
-     User.id = User._getIdFromCookie();
-     if (User.load()) {
-        // loaded the data from a cookie cache
-     } else if (User.id) {
-        // need to fetch the data
-        User._fetchUserInfo();
-     } else {
-        // we know nothing about the user and they've never logged in
-        User._fetchUserInfo();
-     }
 
-     User._getOverrides();
+     User.load()
+     User._getOverrides(); 
 
      // run everything in the post init queue
      Util.runQueue(User._postInitQueue)
@@ -1239,32 +1228,8 @@ var User = {
      }
    },
 
-   _fetchUserInfo: function() {
-        var roles = User._getRolesFromCookie();
-        User.role = roles[0];
-        User.roleDetail = roles[1];
-        if (User.role == 'Staff') {
-            // not enough info in the cookie, so we need to do a remote lookup
-            Util.addEvent(window,'load',function(){
-               var script = document.createElement('script');
-               script.type = "text/javascript";
-               script.src = "https://www.alumni.hbs.edu/analytics-data.aspx";
-               try { document.getElementsByTagName('head')[0].appendChild(script); }
-               catch (e) {}
-            });
-        }
-        // if we have data, store it
-        if (User.id && User.role) {User.store();}
-   },
-
    userdataCallback: function(vars) {
-      if (User.id == vars['id']) {
-         for (var key in vars) {
-            User[key] = vars[key];
-         }
-      }
-      // update the data store
-      User.store();
+        console.info("deprecated userdataCallback")
    },
 
    isValid: function(key,val) {
@@ -1301,36 +1266,36 @@ var User = {
 
    _getRolesFromCookie: function() {
    
-     var hbscookie = Util.getCookie("HBSAnalytics") || Util.getCookie("HBSCOOKIE") ;
+     var hbscookie = Util.getCookie("HBSAnalytics");
      var klass = User._getClassFromCookie(hbscookie);
      var decade = User._getDecadeFromClass(klass);
      
-     if (!/@/.test(hbscookie)) {
-        return ["External","Non HBS"];
-     } else if (/alumni.hbs.edu/.test(hbscookie) && decade) {
+     if (/AL/.test(hbscookie) && decade) {
         return ["Alumni",decade];
-     } else if (/alumni.hbs.edu/.test(hbscookie)) {
+     } else if (/AL/.test(hbscookie)) {
         return ["Alumni","Exed Alum"];
-     } else if (/alumnistg.hbsstg.org/.test(hbscookie) && decade) {
-        return ["Alumni",decade];
-     } else if (/alumnistg.hbsstg.org/.test(hbscookie)) {
-        return ["Alumni","Exed Alum"];
-     } else if (/@bschool/.test(hbscookie)) {
+     } else if (/^hbs.edu/.test(hbscookie) && /DS/.test(hbscookie)) {
+        return ["Doctoral","Doctoral"];
+     } else if (/^hbs.edu/.test(hbscookie) && /FA/.test(hbscookie)) {
+        return ["Faculty","Faculty"];
+     } else if (/^hbs.edu/.test(hbscookie) && /FE/.test(hbscookie)) {
+        return ["Faculty","Faculty"];
+     } else if (/^hbs.edu/.test(hbscookie)) {
         return ["Staff","Staff"];
-     } else if (/@mba/.test(hbscookie) && klass) {
+     } else if (/mba/.test(hbscookie) && klass) {
         return ["MBA","MBA "+klass];
      } else if (/exed.hbs.edu/.test(hbscookie)) {
         return ["Exed","Exed"];
-     } else if (/@public/.test(hbscookie)) {
+     } else if (/public/.test(hbscookie)) {
         return ["External","Public"];
-     } else if (/@crossreg/.test(hbscookie)) {
+     } else if (/crossreg/.test(hbscookie)) {
         return ["External","Crossreg"];
-     } else if (/@partners/.test(hbscookie)) {
+     } else if (/partners/.test(hbscookie)) {
         return ["External","Partners"];
-     } else if (/@guest/.test(hbscookie)) {
+     } else if (/guest/.test(hbscookie)) {
         return ["External","Guest"];
      } else {
-        return ["External","Non HBS"];
+        return false;
      }
    },
    
@@ -1360,9 +1325,6 @@ var User = {
 
      var datastr = Util.getCookie("AnalyticsData");
 
-     // this is some other users cache
-     if (User.id && User.id != Util.getParam('id',datastr)) {return false;}
-
      // flush cookie if it's an old version
      if (Util.getParam('v',datastr) != Analytics.version) {return false;}
 
@@ -1375,9 +1337,23 @@ var User = {
            hasData = true;
         }
      }
-     
-     if (User.role && !User.isValid("role",User.role)) { return false; }
-     
+
+     var roles = User._getRolesFromCookie();
+     if (roles) {
+         // if it is in the cookie, then use that
+         if (User.role != roles[0] || User.roleDetail != roles[1]) {
+             // if it is different, then store it
+             User.role = roles[0];
+             User.roleDetail = roles[1];
+             User.store();
+         }
+     } else if (User.role) {
+         // use what is in the cache
+     } else {
+         User.role = "External"
+         User.roleDetail = "Non HBS";
+     }
+
      return hasData;
    },
 
