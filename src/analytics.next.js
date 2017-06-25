@@ -810,8 +810,8 @@ var Analytics = {
          } else {
             var a = document.createElement('a');
             a.href = link;
-            a.rel = 'search-result'
          }
+         a.rel = 'search-result'
          analytics._linkClick.apply(a);
          if (query) analytics.search(query);
     },
