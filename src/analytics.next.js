@@ -151,17 +151,21 @@ var Analytics = {
         Adobe.set("prop25","D=g");  // enable pathing
         Adobe.set("eVar16","D=mid");  // save marketing cloud ID 
 
+        Adobe.set("eVar63",String(Util.getCookie("HBSAnalytics"))); // debug evar
+
         if (User.role) {
             Adobe.set('prop9',User.role);
             Adobe.set('eVar11','D=c9');
             Adobe.set('eVar8','D=c9'); // duplicate to fix bugginess, might remove later
             Adobe.set('eVar15',User.role);
-            Adobe.set('eVar9','logged in');
         }
         if (User.roleDetail) {
             Adobe.set('prop9',User.role + " : " + User.roleDetail);  // get as specific as possible in the prop9
             Adobe.set('eVar11','D=c9');
             Adobe.set('eVar8','D=c9');
+            if (User.roleDetail != 'Non HBS') {
+                Adobe.set('eVar9','logged in');                
+            }
         } 
         if (User.role) {
             if (User.personID) {
@@ -1134,8 +1138,8 @@ var Google = {
 }
 
 var User = {
-   role: null,
-   roleDetail: null,
+   role: "External",
+   roleDetail: "Non HBS",
    startTime: 0,
    campaign: "None",
    referrerId: null,
