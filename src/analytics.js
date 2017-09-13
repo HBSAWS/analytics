@@ -127,6 +127,8 @@ var Analytics = {
 
         Analytics._runAsyncQueue();
 
+        if (!User.role) User.load(); // reinitialize the user if not found, not sure why this happens
+
         if (!Analytics.options.site) { Analytics.options.site = document.location.hostname; }
       
         Analytics.options.site = Analytics.options.siteOverrides[Analytics.options.site] || Analytics.options.site;
@@ -486,11 +488,12 @@ var Analytics = {
     },
 
     view: function(path,opt) {
-        if (!opt) {
-            var a = document.createElement('a');
-            a.href = path;
-            opt={isDownload:Util.isDownload(a),isOffSite:Util.isOffsite(a)};
-        }
+        var a = document.createElement('a');
+        a.href = path;
+        opt = opt || {};
+        opt['isDownload'] = opt['isDownload'] || Util.isDownload(a);
+        opt['isOffSite'] = opt['isOffSite'] || Util.isOffsite(a);
+
         if (Analytics._view_seen[path]) {return;} // don't send two views for the same page
         var abspath = Util.urlnormalize(Util.absPath(path));
         if (path) {
@@ -501,13 +504,13 @@ var Analytics = {
         }
 
         // for offsite links
-        if (User.referrerId) {
-            Adobe.set('eVar48',User.referrerId);
+        if (User.referrerId || opt.referrerId) {
+            Adobe.set('eVar48',User.referrerId || opt.referrerId);
             Adobe.appendEvent("event41");
             User.clearReferrerId();
         }
-        if (User.linkType) {
-            Adobe.set('eVar37',User.linkType);
+        if (User.linkType || opt.linkType) {
+            Adobe.set('eVar37',User.linkType || opt.linkType);
             User.clearLinkType();
         }
 
@@ -1154,7 +1157,6 @@ var User = {
      arguments.callee.done = true
 
      User.load()
-     User._getOverrides(); 
 
      // run everything in the post init queue
      Util.runQueue(User._postInitQueue)
@@ -1368,7 +1370,7 @@ var User = {
          User.role = "External"
          User.roleDetail = "Non HBS";
      }
-
+     User._getOverrides();
      return hasData;
    },
 
@@ -1796,7 +1798,8 @@ var Util = {
     },
 
     timestamp: function(full) {
-      var date = new Date();
+      var now = new Date(); 
+      var date = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),  now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
       var day = date.getDate();
       day = (day < 10) ? ("0" + day) : day;
       var month = date.getMonth() + 1;
@@ -1927,13 +1930,13 @@ window.analytics.google = Google;
 window.analytics.path = new PathParser(analytics.options,document.location.href);
 window.analytics.PathParser = PathParser;
 window.analytics.util = Util;
+Analytics._preinit();
 Util.addEvent(window,'load',Analytics.save)
 Util.addEvent(window,'load',function(){
     window.setTimeout(Analytics._checkImages,5000);
 });
 Util.addEvent(window,'load',Analytics._checkLoadTime);
 if (!window.onerror) window.onerror = Analytics.onerror;
-Analytics._preinit();
 
 })();  // End Analytics module
 
