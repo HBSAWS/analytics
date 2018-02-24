@@ -30,6 +30,7 @@ var Analytics = {
                'hbswk.hbs.edu','member.exed.hbs.edu','secure.hbs.edu','m.exed.hbs.edu','cn.exed.hbs.edu',
                'beech.hbs.edu','m.hbs.edu','ln.hbs.edu','asklib.library.hbs.edu','poplar.hbs.edu',
                'exed-hbs-form.secure.force.com','exed-hbs.force.com',
+               'pages.exed.hbs.org','forms.exed.hbs.org', 
                'intranet.hbs.edu','inside.hbs.edu','mysite.hbs.edu','www.isc.hbs.edu','lnx.hbs.edu'],
 
         // List of strings to send a 500 error
@@ -87,7 +88,8 @@ var Analytics = {
         // AB Test
         testSegment: null,
 
-
+        // a list of groups the user belongs
+        personGroups: [],
 
         // do we try to use the users previous profile?  This allows profiles to be sticky on shared pages (login,search,404)
         lastprofile: false,
@@ -186,6 +188,10 @@ var Analytics = {
 
         if (Analytics.options.siteRole) {
             Adobe.set('eVar62',Analytics.options.siteRole);   
+        }
+
+        if (Analytics.options.personGroups && Analytics.options.personGroups.length) {
+            Adobe.set('eVar65',Analytics.options.personGroups.join(' : '));   
         }
 
         if (Analytics.options.lastprofile && User.lastsite) {
@@ -1342,8 +1348,8 @@ var User = {
 
      var datastr = Util.getCookie("AnalyticsData");
 
-     // flush cookie if it's an old version
-     if (Util.getParam('v',datastr) != Analytics.version) {return false;}
+     // flush cookie if it's an old version, this doesn't make sense 
+     //if (Util.getParam('v',datastr) != Analytics.version) {return false;}
 
      var hasData = false;
      for (var i=0;i<User.cached.length;i++) {
@@ -2149,25 +2155,100 @@ s.getValOnce=new Function("v","c","e","t",""
 +"0:86400000;k=s.c_r(c);if(v){a.setTime(a.getTime()+e*i);s.c_w(c,v,e"
 +"==0?0:a);}return v==k?'':v");
 
-/* Plugin: getTimeParting 2.1  */
-s.getTimeParting=new Function("t","z","y","l","j",""
-+"var s=this,d,A,U,X,Z,W,B,C,D,Y;d=new Date();A=d.getFullYear();Y=U=S"
-+"tring(A);if(s.dstStart&&s.dstEnd){B=s.dstStart;C=s.dstEnd}else{;U=U"
-+".substring(2,4);X='090801|101407|111306|121104|131003|140902|150801"
-+"|161306|171205|181104|191003';X=s.split(X,'|');for(W=0;W<=10;W++){Z"
-+"=X[W].substring(0,2);if(U==Z){B=X[W].substring(2,4);C=X[W].substrin"
-+"g(4,6)}}if(!B||!C){B='08';C='01'}B='03/'+B+'/'+A;C='11/'+C+'/'+A;}D"
-+"=new Date('1/1/2000');if(D.getDay()!=6||D.getMonth()!=0){return'Dat"
-+"a Not Available'}else{z=z?z:'0';z=parseFloat(z);B=new Date(B);C=new"
-+" Date(C);W=new Date();if(W>B&&W<C&&l!='0'){z=z+1}W=W.getTime()+(W.g"
-+"etTimezoneOffset()*60000);W=new Date(W+(3600000*z));X=['Sunday','Mo"
-+"nday','Tuesday','Wednesday','Thursday','Friday','Saturday'];B=W.get"
-+"Hours();C=W.getMinutes();D=W.getDay();Z=X[D];U='AM';A='Weekday';X='"
-+"00';if(C>30){X='30'}if(j=='1'){if(C>15){X='15'}if(C>30){X='30'}if(C"
-+">45){X='45'}}if(B>=12){U='PM';B=B-12};if(B==0){B=12};if(D==6||D==0)"
-+"{A='Weekend'}W=B+':'+X+U;if(y&&y!=Y){return'Data Not Available'}els"
-+"e{if(t){if(t=='h'){return W}if(t=='d'){return Z}if(t=='w'){return A"
-+"}}else{return Z+', '+W}}}");
+/* Plugin: getTimeParting 2.1 - avast would mark this as a trojan if we didn't deobfuscate it */
+s.getTimeParting = function(t,z,y,l,j){
+    var s = this,
+    d, A, U, X, Z, W, B, C, D, Y;
+    d = new Date();
+    A = d.getFullYear();
+    Y = U = String(A);
+    if (s.dstStart && s.dstEnd) {
+        B = s.dstStart;
+        C = s.dstEnd
+    } else {;
+        U = U.substring(2, 4);
+        X = '090801|101407|111306|121104|131003|140902|150801|161306|171205|181104|191003';
+        X = s.split(X, '|');
+        for (W = 0; W <= 10; W++) {
+            Z = X[W].substring(0, 2);
+            if (U == Z) {
+                B = X[W].substring(2, 4);
+                C = X[W].substring(4, 6)
+            }
+        }
+        if (!B || !C) {
+            B = '08';
+            C = '01'
+        }
+        B = '03/' + B + '/' + A;
+        C = '11/' + C + '/' + A;
+    }
+    D = new Date('1/1/2000');
+    if (D.getDay() != 6 || D.getMonth() != 0) {
+        return 'Data Not Available'
+    } else {
+        z = z ? z : '0';
+        z = parseFloat(z);
+        B = new Date(B);
+        C = new Date(C);
+        W = new Date();
+        if (W > B && W < C && l != '0') {
+            z = z + 1
+        }
+        W = W.getTime() + (W.getTimezoneOffset() * 60000);
+        W = new Date(W + (3600000 * z));
+        X = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        B = W.getHours();
+        C = W.getMinutes();
+        D = W.getDay();
+        Z = X[D];
+        U = 'AM';
+        A = 'Weekday';
+        X = '00';
+        if (C > 30) {
+            X = '30'
+        }
+        if (j == '1') {
+            if (C > 15) {
+                X = '15'
+            }
+            if (C > 30) {
+                X = '30'
+            }
+            if (C > 45) {
+                X = '45'
+            }
+        }
+        if (B >= 12) {
+            U = 'PM';
+            B = B - 12
+        };
+        if (B == 0) {
+            B = 12
+        };
+        if (D == 6 || D == 0) {
+            A = 'Weekend'
+        }
+        W = B + ':' + X + U;
+        if (y && y != Y) {
+            return 'Data Not Available'
+        } else {
+            if (t) {
+                if (t == 'h') {
+                    return W
+                }
+                if (t == 'd') {
+                    return Z
+                }
+                if (t == 'w') {
+                    return A
+                }
+            } else {
+                return Z + ', ' + W
+            }
+        }
+    }
+}
 
 /*
  * Plugin: Days since last Visit 1.1 - capture time from last visit
